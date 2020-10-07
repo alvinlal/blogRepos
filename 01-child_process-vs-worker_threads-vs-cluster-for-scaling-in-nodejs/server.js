@@ -1,15 +1,19 @@
 const express = require("express");
 const app = express();
 
-app.get("/getfibanacci", (req, res) => {
+app.get("/getfibonacci", (req, res) => {
   const startTime = new Date();
   const result = fibonacci(parseInt(req.query.number)); //parseInt is for converting string to number
   const endTime = new Date();
   res.json({
     number: parseInt(req.query.number),
-    fibanacci: result,
+    fibonacci: result,
     time: endTime.getTime() - startTime.getTime() + "ms",
   });
+});
+
+app.get("/testrequest", (req, res) => {
+  res.send("I am unblocked now");
 });
 
 const fibonacci = n => {
