@@ -5,13 +5,16 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
-    "startpromise": "nodemon serverWithPromises"
+    "startpromise": "nodemon serverWithPromises",
+    "startslowserver": "nodemon slowServer",
+    "startasyncserver": "nodemon asyncServer"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
