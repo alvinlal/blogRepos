@@ -7,10 +7,11 @@
     "start": "nodemon server.js",
     "startpromise": "nodemon serverWithPromises",
     "startslowserver": "nodemon slowServer",
-    "startasyncserver": "nodemon asyncServer"
+    "startasyncserver": "nodemon asyncServer",
+    "startchildspawnserver": "nodemon child_spawnServer"
   },
   "keywords": [],
-  "author": "",
+  "author": "Alvin lal",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",

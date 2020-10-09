@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const fetch = require("node-fetch"); //node-fetch is a library used to make http request in nodejs.
 
-app.get("/calltoanotherserver", async (req, res) => {
+app.get("/calltoslowserver", async (req, res) => {
   const result = await fetch("http://localhost:5000/slowrequest"); //fetch returns a promise
   const resJson = await result.json();
   res.json(resJson);
