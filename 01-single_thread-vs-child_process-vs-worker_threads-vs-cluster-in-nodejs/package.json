@@ -8,7 +8,8 @@
     "startpromise": "nodemon serverWithPromises",
     "startslowserver": "nodemon slowServer",
     "startasyncserver": "nodemon asyncServer",
-    "startchildspawnserver": "nodemon childspawnServer"
+    "startchildspawnserver": "nodemon childspawnServer",
+    "startchildforkserver":"nodemon childforkServer.js"
   },
   "keywords": [],
   "author": "Alvin lal",
