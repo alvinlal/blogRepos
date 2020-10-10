@@ -29,7 +29,6 @@ function childProcess() {
   //workers can share TCP connection
 
   app.get("/", (req, res) => {
-    for (let i = 0; i < 2e6; i++) {} //simulating some delay
     res.send(`hello from server ${process.pid}`);
   });
 
