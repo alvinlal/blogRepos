@@ -9,7 +9,9 @@
     "startslowserver": "nodemon slowServer",
     "startasyncserver": "nodemon asyncServer",
     "startchildspawnserver": "nodemon childspawnServer",
-    "startchildforkserver":"nodemon childforkServer.js"
+    "startchildforkserver":"nodemon childforkServer.js",
+    "startsinglethreadserver":"nodemon singleThreadServer.js",
+    "startmultiThreadServer":"nodemon multiThreadServer.js"
   },
   "keywords": [],
   "author": "Alvin lal",
