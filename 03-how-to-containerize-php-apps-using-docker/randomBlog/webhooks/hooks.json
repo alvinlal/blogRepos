@@ -3,6 +3,16 @@
         "id": "randomBlog",
         "execute-command": "/var/www/randomBlog/webhooks/deploy.sh",
         "command-working-directory": "/var/www/randomBlog",
-        "response-message": "Executing deploy script..."
+        "response-message": "Executing deploy script...",
+        "trigger-rule": {
+            "match": {
+                "type": "payload-hmac-sha256",
+                "secret": "randomblog",
+                "parameter": {
+                    "source": "header",
+                    "name": "X-Hub-Signature-256"
+                }
+            }
+        }
     }
 ]
