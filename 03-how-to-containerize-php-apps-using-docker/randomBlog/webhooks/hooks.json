@@ -1,0 +1,8 @@
+[
+    {
+        "id": "randomBlog",
+        "execute-command": "/var/www/randomBlog/webhooks/deploy.sh",
+        "command-working-directory": "/var/www/randomBlog",
+        "response-message": "Executing deploy script..."
+    }
+]

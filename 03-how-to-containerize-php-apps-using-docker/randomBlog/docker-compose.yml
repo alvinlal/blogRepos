@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  randomBlog:
+    container_name: randomblog
+    image: randomblog
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "9000:9000"
+    depends_on:
+      - mysql
+
+  mysql:
+    container_name: mysql
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password 
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: randomBlog
+      MYSQL_USER: alvin
+      MYSQL_PASSWORD: alvin123
+    ports:
+      - "6033:3306"
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - "8899:80"
+    depends_on:
+      - mysql
+    

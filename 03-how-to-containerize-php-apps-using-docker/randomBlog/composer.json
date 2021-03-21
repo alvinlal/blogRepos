@@ -8,6 +8,10 @@
             "email": "alvinzzz2001@gmail.com"
         }
     ],
+    "scripts": {
+        "start":"docker-compose up --build"
+        
+    },
     "require": {
         "vlucas/phpdotenv": "^5.3"
     }
