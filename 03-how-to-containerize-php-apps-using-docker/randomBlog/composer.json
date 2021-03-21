@@ -1,0 +1,14 @@
+{
+    "name": "alvin/03-how-to-containerize-php-apps-using-docker",
+    "description": "An example app for my blog post",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "alvinlal",
+            "email": "alvinzzz2001@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.3"
+    }
+}
