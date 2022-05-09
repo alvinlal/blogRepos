@@ -7,10 +7,9 @@ const s3 = new S3({
 });
 
 const process360p = event => {
-  const id = event.id;
-  console.log(id);
+  const id = event.id; // data from the invokeStepFunction lamda function
   const params = { Bucket: 'video-intake', Key: id };
-  const readStream = s3.getObject(params).createReadStream();
+  const readStream = s3.getObject(params).createReadStream(); // create s3 readStream
   var totalTime;
 
   fs.mkdirSync(`/tmp/${id}`);
@@ -29,7 +28,7 @@ const process360p = event => {
         console.log(`uploading ${file} to s3`);
         return s3.putObject(params).promise();
       });
-      await Promise.all(fileUploadPromises);
+      await Promise.all(fileUploadPromises); // upload output to s3
       await fs.rmdirSync(`/tmp/${id}`, { recursive: true });
       console.log(`tmp is deleted!`);
     })
@@ -42,7 +41,7 @@ const process360p = event => {
       console.log(`progress :- ${percent}%`);
     })
     .outputOptions(['-vf scale=w=640:h=360', '-c:a aac', '-ar 48000', '-b:a 96k', '-c:v h264', '-profile:v main', '-crf 20', '-g 48', '-keyint_min 48', '-sc_threshold 0', '-b:v 800k', '-maxrate 856k', '-bufsize 1200k', '-f hls', '-hls_time 4', '-hls_playlist_type vod', `-hls_segment_filename /tmp/${id}/360p_%d.ts`])
-    .output(`/tmp/${id}/360p.m3u8`)
+    .output(`/tmp/${id}/360p.m3u8`) // output files are temporarily stored in tmp directory
     .run();
 };
 

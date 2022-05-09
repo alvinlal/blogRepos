@@ -15,7 +15,7 @@ const putMetadataAndPlaylist = async event => {
       Key: id,
     };
 
-    const data = await s3.headObject(s3Params).promise();
+    const data = await s3.headObject(s3Params).promise(); // gets metadata from s3
 
     const dynamoParams = {
       TableName: 'videos',
@@ -27,7 +27,7 @@ const putMetadataAndPlaylist = async event => {
       },
     };
 
-    await dynamoDb.put(dynamoParams).promise();
+    await dynamoDb.put(dynamoParams).promise(); // writes metadata to dynamoDb
     console.log('Successfully written metadata to dynamoDb');
 
     const content = `#EXTM3U
@@ -41,7 +41,7 @@ const putMetadataAndPlaylist = async event => {
 #EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=1920x1080
 1080p.m3u8`;
 
-    await s3.putObject({ Bucket: 'video-egress', Key: `${id}/index.m3u8`, Body: content }).promise();
+    await s3.putObject({ Bucket: 'video-egress', Key: `${id}/index.m3u8`, Body: content }).promise(); // writes index.m3u8 to output bucket
 
     console.log('Successfully written index playlist to s3');
 

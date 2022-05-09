@@ -8,7 +8,6 @@ const s3 = new S3({
 
 const process720p = event => {
   const id = event.id;
-  console.log(id);
   const params = { Bucket: 'video-intake', Key: id };
   const readStream = s3.getObject(params).createReadStream();
   var totalTime;

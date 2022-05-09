@@ -7,13 +7,14 @@ AWS.config.update({
 const stepFunctions = new AWS.StepFunctions();
 
 const invokeStepFunction = (event, context, callback) => {
-  const id = event.Records[0].s3.object.key;
+  const id = event.Records[0].s3.object.key; // event object contains payload from s3 trigger
   try {
     const stateMachineParams = {
       stateMachineArn: process.env.STEP_FUNCTION_ARN,
-      input: JSON.stringify({ id }),
+      input: JSON.stringify({ id }), // input to step function
     };
     stepFunctions.startExecution(stateMachineParams, (err, data) => {
+      // starts step function execution
       if (err) {
         console.error(err);
         const response = {

@@ -6,6 +6,7 @@ const videosContainer = document.getElementById('videos-container');
 const uploadStatus = document.getElementById('upload-status');
 // functions
 async function handleSubmit(e) {
+  // runs when you click upload button
   e.preventDefault();
 
   if (!file.files.length) {
@@ -22,12 +23,13 @@ async function handleSubmit(e) {
     const {
       data: { url, fields },
     } = await fetch('https://ve2odyhnhg.execute-api.ap-south-1.amazonaws.com/getpresignedurl', {
+      // your url might be different from this, replace it with api gateway endpoint of your lambda function
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      body: JSON.stringify({ title: title.value }),
+      body: JSON.stringify({ title: title.value }), // send other metadata you want here
     }).then(res => res.json());
 
     const data = {

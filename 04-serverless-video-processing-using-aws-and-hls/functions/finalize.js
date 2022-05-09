@@ -23,7 +23,7 @@ const finalize = async event => {
       },
     };
 
-    await dynamoDb.update(dynamoParams).promise();
+    await dynamoDb.update(dynamoParams).promise(); // updates status of the video
     console.log('Successfully updated video status');
 
     const cloudfrontParams = {
@@ -37,7 +37,7 @@ const finalize = async event => {
       },
     };
 
-    await cloudfront.createInvalidation(cloudfrontParams).promise();
+    await cloudfront.createInvalidation(cloudfrontParams).promise(); // invalidates cloudfront distribution
     console.log('cloudfront invalidated');
   } catch (err) {
     console.error(err);
