@@ -1,0 +1,123 @@
+* {
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+header {
+  height: 100px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid coral;
+}
+
+label {
+  color: coral;
+  font-weight: bold;
+}
+
+input[type='text'] {
+  border: 2px solid coral;
+  height: 30px;
+  padding: 4px 8px;
+  color: coral;
+}
+
+#upload-status {
+  color: coral;
+}
+
+input[type='file'] {
+  color: coral;
+  margin-left: 80px;
+}
+
+button {
+  text-decoration: none;
+  color: coral;
+  font-weight: bold;
+  background-color: white;
+  font-size: 24px;
+  border: 2px solid coral;
+  padding: 5px;
+  width: 150px;
+  cursor: pointer;
+}
+
+.upload {
+  margin: 10px auto;
+  padding: 20px;
+  border: 2px solid coral;
+  border-radius: 5px;
+  height: 300px;
+  width: 500px;
+}
+
+.upload form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+#videos-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.video {
+  margin: 10px 0px;
+  padding: 10px;
+  border: 2px solid coral;
+  border-radius: 5px;
+  min-height: 300px;
+  min-width: 500px;
+  width: auto;
+  height: auto;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 500px;
+}
+
+.title {
+  color: coral;
+  margin: 10px 0px;
+  font-size: 24px;
+}
+
+/*spinner from https://codepen.io/mandelid/pen/kNBYLJ */
+#loading {
+  display: inline-block;
+  margin-right: 10px;
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(192, 145, 235, 0.3);
+  border-radius: 50%;
+  border-top-color: coral;
+  animation: spin 1s ease-in-out infinite;
+  -webkit-animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes spin {
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}

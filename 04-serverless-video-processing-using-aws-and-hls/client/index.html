@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://vjs.zencdn.net/7.18.1/video-js.css" rel="stylesheet" />
+    <link href="./css/style.css" rel="stylesheet" />
+    <title>video Ingestion using aws</title>
+</head>
+
+<body>
+    <div class="upload">
+        <form method="post" style="margin-bottom: 100px;">
+            <label>video title:<input type="text" name="title" /></label>
+            <input type="file" name="file" accept="video/*" />
+            <p id="upload-status"></p>
+            <button type="submit">upload</button>
+        </form>
+    </div>
+    <div id="videos-container">
+        <!-- insert videos using js-->
+    </div>
+</body>
+<script src="https://vjs.zencdn.net/7.18.1/video.min.js"></script>
+<script src="js/videojs-contrib-quality-levels.min.js"></script>
+<script src="js/videojs-hls-quality-selector.min.js"></script>
+<script src="js/app.js"></script>
+
+</html>

@@ -1,0 +1,271 @@
+service: serverless-video-processing-using-aws
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ap-south-1
+  environment:
+    STEP_FUNCTION_ARN: "arn:aws:states:${self:provider.region}:${aws:accountId}:stateMachine:videoIngestionMachine"
+    CLOUDFRONT_DOMAIN: !GetAtt videoDistribution.DomainName
+    CLOUDFRONT_ID: !Ref videoDistribution
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+        - "s3:GetObject"
+        - "dynamodb:PutItem"
+        - "dynamodb:UpdateItem"
+        - "dynamodb:Scan"
+        - "states:StartExecution"
+        - "cloudfront:CreateInvalidation"
+      Resource:
+        - arn:aws:s3:::video-intake/*
+        - arn:aws:s3:::video-egress/*
+        - "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/videos"
+        - "arn:aws:states:${self:provider.region}:${aws:accountId}:stateMachine:videoIngestionMachine"
+        - !Join [
+            "",
+            [
+              "arn:aws:cloudfront::${aws:accountId}:distribution/",
+              !Ref videoDistribution,
+            ],
+          ]
+
+  s3:
+    videoIntakeBucket:
+      name: video-intake
+      corsConfiguration:
+        CorsRules:
+          - AllowedMethods:
+              - POST
+            AllowedOrigins:
+              - "*"
+      publicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  httpApi:
+    cors: true
+
+plugins:
+  - serverless-step-functions
+  - serverless-iam-roles-per-function
+
+functions:
+  getPreSignedUrl:
+    handler: functions/getPreSignedUrl.handler
+    iamRoleStatementsName: getPreSignedUrlLambdaRole
+    iamRoleStatements: []
+    iamRoleStatementsInherit: true
+    events:
+      - httpApi:
+          path: /getpresignedurl
+          method: post
+
+  getVideos:
+    handler: functions/getVideos.handler
+    iamRoleStatementsName: getVideosLambdaRole
+    iamRoleStatements: []
+    iamRoleStatementsInherit: true
+    events:
+      - httpApi:
+          path: /getVideos
+          method: get
+
+  invokeStepFunction:
+    handler: functions/invokeStepFunction.handler
+    events:
+      - s3:
+          bucket: videoIntakeBucket
+          event: s3:ObjectCreated:*
+    iamRoleStatementsName: invokeStepFuntionLambdaRole
+    iamRoleStatements: []
+    iamRoleStatementsInherit: true
+
+  putMetadataAndPlaylist:
+    handler: functions/putMetadataAndPlaylist.handler
+    iamRoleStatementsName: putMetadataAndPlaylistLambdaRole
+    iamRoleStatements: []
+    iamRoleStatementsInherit: true
+
+  process360p:
+    handler: functions/process360p.handler
+    memorySize: 10240
+    iamRoleStatementsName: process360pLambdaRole
+    iamRoleStatements: []
+    iamRoleStatementsInherit: true
+    timeout: 900
+    layers:
+      - { Ref: LibsLambdaLayer }
+
+  process480p:
+    handler: functions/process480p.handler
+    memorySize: 10240
+    iamRoleStatementsName: process480pLambdaRole
+    iamRoleStatements: []
+    iamRoleStatementsInherit: true
+    timeout: 900
+    layers:
+      - { Ref: LibsLambdaLayer }
+
+  process720p:
+    handler: functions/process720p.handler
+    memorySize: 10240
+    iamRoleStatementsName: process720pLambdaRole
+    iamRoleStatements: []
+    iamRoleStatementsInherit: true
+    timeout: 900
+    layers:
+      - { Ref: LibsLambdaLayer }
+
+  process1080p:
+    handler: functions/process1080p.handler
+    memorySize: 10240
+    iamRoleStatementsName: process1080pLambdaRole
+    iamRoleStatements: []
+    iamRoleStatementsInherit: true
+    timeout: 900
+    layers:
+      - { Ref: LibsLambdaLayer }
+
+  finalize:
+    handler: functions/finalize.handler
+    iamRoleStatementsName: finalizeLambdaRole
+    iamRoleStatements: []
+    iamRoleStatementsInherit: true
+
+stepFunctions:
+  stateMachines:
+    videoIngestionMachine:
+      name: videoIngestionMachine
+      dependsOn:
+        - Process360pLambdaFunction
+        - Process480pLambdaFunction
+        - Process720pLambdaFunction
+        - Process1080pLambdaFunction
+        - PutMetadataAndPlaylistLambdaFunction
+        - FinalizeLambdaFunction
+      definition:
+        StartAt: convertVideo
+        States:
+          convertVideo:
+            Type: Parallel
+            Next: finalize
+            Branches:
+              - StartAt: convertTo360p
+                States:
+                  convertTo360p:
+                    Type: Task
+                    End: true
+                    Resource:
+                      Fn::GetAtt: [process360p, Arn]
+              - StartAt: convertTo480p
+                States:
+                  convertTo480p:
+                    Type: Task
+                    End: true
+                    Resource:
+                      Fn::GetAtt: [process480p, Arn]
+              - StartAt: convertTo720p
+                States:
+                  convertTo720p:
+                    Type: Task
+                    End: true
+                    Resource:
+                      Fn::GetAtt: [process720p, Arn]
+              - StartAt: convertTo1080p
+                States:
+                  convertTo1080p:
+                    Type: Task
+                    End: true
+                    Resource:
+                      Fn::GetAtt: [process1080p, Arn]
+              - StartAt: putMetadataAndPlaylist
+                States:
+                  putMetadataAndPlaylist:
+                    Type: Task
+                    End: true
+                    Resource:
+                      Fn::GetAtt: [putMetadataAndPlaylist, Arn]
+          finalize:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [finalize, Arn]
+            End: True
+
+resources:
+  Resources:
+    videoEgressBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: video-egress
+        CorsConfiguration:
+          CorsRules:
+            - AllowedMethods:
+                - GET
+              AllowedOrigins:
+                - "*"
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+
+    videoEgressBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: video-egress
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${cloudFrontOriginIdentity}"
+              Action: "s3:GetObject"
+              Resource: arn:aws:s3:::video-egress/*
+
+    videoDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Origins:
+            - DomainName: video-egress.s3.ap-south-1.amazonaws.com
+              Id: s3-video-egress
+              S3OriginConfig:
+                OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${cloudFrontOriginIdentity}"
+          Enabled: "true"
+          Comment: "video-egress cloudfront distribution"
+          DefaultCacheBehavior:
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+            AllowedMethods:
+              - GET
+              - HEAD
+            TargetOriginId: s3-video-egress
+            ViewerProtocolPolicy: redirect-to-https
+          ViewerCertificate:
+            CloudFrontDefaultCertificate: "true"
+
+    videosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: videos
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+    cloudFrontOriginIdentity:
+      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: "origin identity"
+
+layers:
+  libs:
+    path: layers
